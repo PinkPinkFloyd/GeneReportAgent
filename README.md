@@ -152,7 +152,7 @@ This project is licensed under the **MIT License**.
 
 ## 📬 Contact
 
-作者：孙苏闽
+作者：PinkPinkFloyd
 
 > Open source first.
 > AI + Bio + Engineering.

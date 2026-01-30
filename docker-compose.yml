@@ -1,0 +1,15 @@
+# 部署chroma向量数据库
+version: '3.9'
+services:
+  chroma:
+    image: chromadb/chroma:latest
+    container_name: chroma_db
+    ports:
+      - "8000:8000"
+    volumes:
+      # 把容器内的 /chroma/chroma 挂载出来，数据才不会丢
+      - ./chroma_data:/chroma/chroma
+    environment:
+      - IS_PERSISTENT=TRUE
+      - ALLOW_RESET=TRUE
+    restart: unless-stopped

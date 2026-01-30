@@ -1,0 +1,93 @@
+// server/prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url= env("DATABASE_URL")
+}
+
+// === 定义你的数据表 ===
+
+// 举例：我们要存储所有的对话历史，方便 AI "回忆"
+model Conversation {
+  id        Int      @id @default(autoincrement())
+  role      String   // 'user' 或 'ai'
+  content   String   @db.Text // 长文本
+  createdAt DateTime @default(now())
+}
+
+// 举例：任务列表（AI 规划的任务）
+model Task {
+  id        Int      @id @default(autoincrement())
+  title     String
+  status    String   @default("pending") // pending, done
+  createdAt DateTime @default(now())
+}
+
+//  1 SNP 公共定义表
+model SnpDefinition {
+  id              BigInt   @id @default(autoincrement())
+  rsid            String   @unique @db.VarChar(32)
+  chromosome      String   @db.VarChar(5)
+  position        Int
+
+  referenceAllele String?  @db.VarChar(255)
+  alternateAllele String?  @db.VarChar(255)
+
+  geneSymbol      String?  @db.VarChar(64)
+  description     String?  @db.Text
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([chromosome, position])
+}
+
+
+//2 用户 SNP 结果表（DNA.txt 正规化）
+
+model UserSnpResult {
+  id         BigInt   @id @default(autoincrement())
+  userId     BigInt
+  rsid       String   @db.VarChar(32)
+  chromosome String   @db.VarChar(5)
+  position   Int
+  genotype   String   @db.Char(2)
+  quality    Float?
+  createdAt  DateTime @default(now())
+
+  @@unique([userId, rsid])
+  @@index([userId, chromosome, position])
+}
+
+//3 SNP 研究解释表（向量来源）
+model SnpInterpretation {
+  id            BigInt   @id @default(autoincrement())
+  rsid          String   @db.VarChar(32)
+  category      String?  @db.VarChar(64)
+  interpretation String  @db.Text
+  population    String?  @db.VarChar(64)
+  evidenceLevel String   @default("low")
+  source        String?  @db.VarChar(255)
+  createdAt     DateTime @default(now())
+
+  @@index([rsid, category])
+}
+
+
+// 4 SNP 规则表（企业核心）
+
+model SnpRule {
+  id             BigInt   @id @default(autoincrement())
+  rsid           String   @db.VarChar(32)
+  genotype       String   @db.Char(2)
+  conclusion     String   @db.Text
+  confidence     String   @default("medium")
+  recommendation String?
+  createdAt      DateTime @default(now())
+
+  @@unique([rsid, genotype])
+}

@@ -28,51 +28,80 @@ GeneReportAgent 是一个 **开源的基因分析报告生成 + 代码辅助项�
 ## 🧱 Project Structure | 项目结构（示例）
 
 ```
-GeneReportAgent/
-├── data/                  # 示例基因数据（SNP / JSON / Mock）
+GeneReportAgent/server
+├── dist/                  # nest打包
+├── prisma/                # 数据库结构
+├── src/                   # 示例基因数据（SNP / JSON / Mock）
+    ├── knowledge                  # 知识库核心服务
 ├── prompts/               # 基因分析 & 报告生成 Prompt 模板
 ├── rules/                 # 基因位点 / 表型 / 风险规则定义
 ├── agent/                 # AI Agent 核心逻辑
 ├── report/                # 报告结构 & 模板（JSON / Markdown / HTML）
-├── tools/                 # 分析、解析、辅助工具
-├── examples/              # 使用示例
+├── tools/                 # 核心：Agent辅助工具
 ├── docs/                  # 项目文档
 ├── LICENSE
 └── README.md
 ```
 
-> 实际结构可根据你的语言栈（Python / Node.js / Java 等）调整
 
 ---
 
 ## 🚀 Quick Start | 快速开始
+> 关于正式使用
 
-> 以下为概念示例，具体以项目代码为准
+1.首先你需要dbSNP基因原始VCF文件，数据量巨大，预先准备好数据库
+  下载地址：https://ftp.ncbi.nih.gov/snp/organisms/human_9606/VCF/00-common_all.vcf.gz
+  解压后生成00-common_all.vcf文件，需要自行解析导入数据库
+  数据库结构在server/prisma/schema.prisma的SNP 公共定义表
+
+2.另外需要snp基因点与人类语言对应规则
+  示例在server/static/snp_facts.json，数据需要自己准备
+  同样需要导入数据库，即SNP 规则表（企业核心）
+
+3.最后一个数据源也是需要自行解析导入数据库，即SNP 研究解释表（向量来源）
+
+4.client目录下新建.env环境变量，可根据自身情况重写，下面为示例
+  electron主进程已经导入环境变量到子进程，server端无需再配置环境变量
+```bash
+DATABASE_URL="mysql://root:xxxx@xxx.xxx.xx.xx:3306/xxxx"
+
+GOOGLE_API_KEY=xxxxxxx
+
+# 前端请求地址
+API_BASE_URL=http://xxx:3000
+
+# Qwen3Embeddings 服务地址
+EMBEDDINGS_URL=http://xxx:8000
+
+# Croma向量数据库 的URL
+CROMA_URL="http://xxx:8000" 
+
+# 千问API Key
+QIANWEN_API_KEY=sk-xxxxx
+
+# 后端服务 端口
+SERVER_PORT=3000
+
+# 开启 LangSmith 追踪
+LANGCHAIN_TRACING_V2=true
+
+LANGCHAIN_API_KEY=lsv2_xxxxx
+
+# 项目名，这样在LANGCHAIN后台就能看到所有日志都归类在这个项目下
+LANGCHAIN_PROJECT=ai-agent-studio
+```
+> 以下为运行示例，具体以项目代码为准
 
 ```bash
 # 克隆项目
 git clone https://github.com/yourname/GeneReportAgent.git
 cd GeneReportAgent
 
-# 安装依赖
-npm install  # or pip install -r requirements.txt
+# 安装server端和client端依赖
+npm install:all  
 
-# 运行示例
-npm run example
-```
-
-或在代码中使用：
-
-```ts
-import { GeneReportAgent } from "gene-report-agent";
-
-const agent = new GeneReportAgent({
-  model: "your-llm",
-  rulesPath: "./rules",
-});
-
-const report = await agent.generateReport(geneData);
-console.log(report);
+# 运行
+npm run dev
 ```
 
 ---

@@ -1,5 +1,4 @@
 import { createApp } from 'vue'
-// 如果你之前删空了 style.css，这行留着也没事，或者你可以删掉它
 import './assets/main.css'
 import App from './App.vue'
 

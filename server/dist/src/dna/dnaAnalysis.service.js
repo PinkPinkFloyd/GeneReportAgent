@@ -60,14 +60,15 @@ let DnaAnalysisService = DnaAnalysisService_1 = class DnaAnalysisService {
     BATCH_SIZE = 1000;
     constructor(prisma) {
         this.prisma = prisma;
-        this.embeddings = new qwen3_embeddings_1.Qwen3Embeddings("http://192.168.100.246:8000/embeddings");
+        console.log('初始化 Embedding 服务======>', process.env);
+        this.embeddings = new qwen3_embeddings_1.Qwen3Embeddings(`${process.env.EMBEDDINGS_URL}/embeddings`);
     }
     async initVectorStore() {
         if (this.vectorStore)
             return;
         this.vectorStore = await chroma_1.Chroma.fromExistingCollection(this.embeddings, {
             collectionName: this.COLLECTION_NAME,
-            url: process.env.CHROMA_URL || "http://localhost:8000",
+            url: process.env.CHROMA_URL,
         });
     }
     async searchVectorStore(query, userId) {

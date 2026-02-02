@@ -1,8 +1,10 @@
+import 'dotenv/config'
 // check-models.js
 // 运行方法: node check-models.js
 
 // 1. 尝试从环境变量获取 Key，如果没有则手动填入
-const API_KEY = process.env.GOOGLE_API_KEY || "AIzaSyAHbqFjnvKlwGaUZl-3ayyDEglkZd0FoHo";
+const API_KEY = process.env.GOOGLE_API_KEY;
+console.log(process.env);
 
 if (!API_KEY || API_KEY.startsWith("你的")) {
   console.error("❌ 错误: 请先在脚本中填入有效的 GOOGLE_API_KEY，或者设置环境变量。");

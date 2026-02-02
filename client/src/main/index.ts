@@ -1,3 +1,5 @@
+// 主进程入口，放在最上面
+import 'dotenv/config';
 import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
@@ -48,7 +50,7 @@ function createWindow(): void {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(async () => {
-
+  console.log('[ENV] API_BASE_URL =', process.env.API_BASE_URL)
   // Set app user model id for windows
   // 1️⃣ 系统 & Electron 层准备
   electronApp.setAppUserModelId('com.electron')

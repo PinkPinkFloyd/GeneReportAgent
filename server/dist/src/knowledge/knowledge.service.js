@@ -57,7 +57,7 @@ let KnowledgeService = KnowledgeService_1 = class KnowledgeService {
     embeddings;
     COLLECTION_NAME = "agent_codebase";
     constructor() {
-        this.embeddings = new qwen3_embeddings_1.Qwen3Embeddings("http://192.168.100.246:8000/embeddings");
+        this.embeddings = new qwen3_embeddings_1.Qwen3Embeddings(`${process.env.EMBEDDINGS_URL}/embeddings`);
     }
     async initVectorStore() {
         this.vectorStore = await chroma_1.Chroma.fromExistingCollection(this.embeddings, {

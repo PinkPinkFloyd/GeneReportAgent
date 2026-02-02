@@ -1,14 +1,15 @@
+// 知识库服务
 import { Injectable, Logger } from '@nestjs/common';
 import { Chroma } from "@langchain/community/vectorstores/chroma";
 import { Embeddings } from "@langchain/core/embeddings";
-// import { GoogleGenerativeAIEmbeddings } from "@langchain/google-genai";//弃用
+// import { GoogleGenerativeAIEmbeddings } from "@langchain/google-genai";// 弃用
 import { Qwen3Embeddings } from "../embeddings/qwen3.embeddings";
 import {
   RecursiveCharacterTextSplitter,
   //   MarkdownHeaderTextSplitter 
 } from "@langchain/textsplitters";
 import type { SupportedTextSplitterLanguages } from "@langchain/textsplitters";
-// 🔥 新增：Word 文档加载器
+// 新增：Word 文档加载器
 import { DocxLoader } from "@langchain/community/document_loaders/fs/docx";
 import { Document } from "@langchain/core/documents";
 import * as fs from 'fs';
@@ -23,11 +24,11 @@ export class KnowledgeService {
   private readonly COLLECTION_NAME = "agent_codebase";
 
   constructor() {
-    // 🔥 优化 2: 确保 Qwen3Embeddings 内部 fetch 使用 Keep-Alive
+    // 确保 Qwen3Embeddings 内部 fetch 使用 Keep-Alive
     // Qwen3Embeddings确保传给 fetch 的 agent 是 keepAlive: true
     // 初始化
     this.embeddings = new Qwen3Embeddings(
-      "http://192.168.100.246:8000/embeddings" // Mac IP
+      `${process.env.EMBEDDINGS_URL}/embeddings` // Mac IP
     );
   }
   //   初始化向量存储
@@ -135,7 +136,7 @@ export class KnowledgeService {
   }
 
   /**
-    * 🏎️ 极速并发入库 (流水线模式)
+    * 并发入库 (流水线模式)
     * 针对 M4 芯片优化：高并发，小批次
     */
   private async runBatchIngestionFast(docs: Document[], fileName: string) {
@@ -159,7 +160,7 @@ export class KnowledgeService {
     let completedChunks = 0;
     let completedDocs = 0;
 
-    // 🚀 核心逻辑: 任务池 (Worker Pool)
+    // 核心逻辑: 任务池 (Worker Pool)
     // 这种写法保证永远有 CONCURRENCY 个任务在跑，而不是跑完一组等下一组
     const runWorker = async () => {
       while (chunks.length > 0) {
@@ -190,7 +191,7 @@ export class KnowledgeService {
       }
     };
 
-    // 启动 5 个并发工人 (Worker)
+    // 启动 5 个并发 (Worker)
     const workers: any = [];
     for (let i = 0; i < CONCURRENCY; i++) {
       workers.push(runWorker());

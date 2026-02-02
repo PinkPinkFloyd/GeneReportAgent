@@ -28,10 +28,11 @@ export class DnaAnalysisService {
     constructor(
         private prisma: PrismaService
     ) {
+        console.log('初始化 Embedding 服务======>',process.env);
         // 初始化 Embedding 服务
         // 确保你的 Qwen3Embeddings 服务地址是正确的
         this.embeddings = new Qwen3Embeddings(
-            "http://192.168.100.246:8000/embeddings"
+            `${process.env.EMBEDDINGS_URL}/embeddings`
         );
     }
 
@@ -44,7 +45,7 @@ export class DnaAnalysisService {
             this.embeddings,
             {
                 collectionName: this.COLLECTION_NAME,
-                url: process.env.CHROMA_URL || "http://localhost:8000",
+                url: process.env.CHROMA_URL,
             }
         );
     }

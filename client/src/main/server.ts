@@ -35,11 +35,11 @@ export async function startServer(): Promise<void> {
     env: {
       ...process.env,
       SERVER_PORT: PORT.toString(),
-      GOOGLE_API_KEY: process.env.GOOGLE_API_KEY || "AIzaSyAHbqFjnvKlwGaUZl-3ayyDEglkZd0FoHo", // 传递 Key
+      GOOGLE_API_KEY: process.env.GOOGLE_API_KEY, // 传递 Key
       // 必须把数据库连接传给子进程！
       // 注意：在打包后，你可能需要提供一个设置界面让用户填这个 URL
       // 或者默认连 localhost
-      DATABASE_URL: process.env.DATABASE_URL || "mysql://root:Sunsumin37.@192.168.100.155:3306/ai_agent_db"
+      DATABASE_URL: process.env.DATABASE_URL
     },
     stdio: 'pipe', // 管道模式，让我们可以看到日志
   });

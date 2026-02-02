@@ -9,9 +9,8 @@ import { createKnowledgeTools } from './tools/knowledge.tool'; //知识库相关
 import { KnowledgeService } from './knowledge/knowledge.service';//知识库相关
 import { DnaAnalysisService } from './dna/dnaAnalysis.service'; //DNA
 import { createDnaAnalysisTool } from './tools/analyzeUserDna.tool';
-//! 引入千问
-import { ChatAlibabaTongyi } from "@langchain/community/chat_models/alibaba_tongyi";
-//! 1️⃣ 修改引入：使用 ChatOpenAI
+
+//! 修改引入：使用 ChatOpenAI，千问兼容写法
 import { ChatOpenAI } from "@langchain/openai";
 import * as path from 'path'; // 引入 path 模块
 import * as os from 'os'; // 引入 os 模块
@@ -89,20 +88,20 @@ export class AppService {
           new SystemMessage(`
           你是一位专业的生物信息学遗传咨询专家。你拥有读取用户 DNA 分析报告的能力。
 
-当用户提问时（例如：“我应该怎么吃？”或“我会得老年痴呆吗？”）：
-1. **不要**直接凭空回答通用的健康建议。
-2. **必须**先调用 search_genetic_dna 工具，查询用户的基因数据。
-3. **综合分析（关键步骤）**：
-   - 拿到的数据可能是零散的（比如 rs123 说你代谢慢，rs456 说你吸收好）。
-   - 你需要像医生一样，把这些冲突或相关的信息**串联**起来。
-   - 举例：如果发现用户有 APOE e4（阿兹海默风险）且有叶酸代谢障碍基因，你应该建议他“重点补充叶酸和B12以保护神经系统”，而不仅仅是报数据。
+          当用户提问时（例如：“我应该怎么吃？”或“我会得老年痴呆吗？”）：
+          1. **不要**直接凭空回答通用的健康建议。
+          2. **必须**先调用 search_genetic_dna 工具，查询用户的基因数据。
+          3. **综合分析（关键步骤）**：
+            - 拿到的数据可能是零散的（比如 rs123 说你代谢慢，rs456 说你吸收好）。
+            - 你需要像医生一样，把这些冲突或相关的信息**串联**起来。
+            - 举例：如果发现用户有 APOE e4（阿兹海默风险）且有叶酸代谢障碍基因，你应该建议他“重点补充叶酸和B12以保护神经系统”，而不仅仅是报数据。
 
-4. **回答风格**：
-   - 先给出结论（风险高/中/低）。
-   - 再列出科学依据（“检测到 rsXXXX 呈 AA 型...”）。
-   - 最后给出高度定制化的生活/饮食建议。
+          4. **回答风格**：
+            - 先给出结论（风险高/中/低）。
+            - 再列出科学依据（“检测到 rsXXXX 呈 AA 型...”）。
+            - 最后给出高度定制化的生活/饮食建议。
 
-⚠️ 必须附带免责声明：本结果仅供参考，不作为临床诊断依据。
+          ⚠️ 必须附带免责声明：本结果仅供参考，不作为临床诊断依据。
         `),
 
           // 用户的消息紧随其后
@@ -117,7 +116,7 @@ export class AppService {
 
       // === 第四步：智能解析结果 (修复 {"reply":"[]"} 问题) ===
       // ReactAgent 的结果通常包含 structuredResponse 或 messages
-      // 我们尝试获取最后一条消息的内容
+      // 尝试获取最后一条消息的内容
       const lastMessage = result.messages[result.messages.length - 1];
       let aiContent = "";
 
